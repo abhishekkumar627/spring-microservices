@@ -11,11 +11,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleProductExceptionHandler(ProductNotFoundException productNotFoundException){
-        ErrorMessage message = ErrorMessage.builder()
-                .message(productNotFoundException.getMessage())
-                .errorCode(productNotFoundException.getErrorCode())
-                .build();
+    public ResponseEntity<ErrorMessage> handleProductExceptionHandler(
+            ProductNotFoundException productNotFoundException) {
+        ErrorMessage message = ErrorMessage.builder().message(productNotFoundException.getMessage())
+                .errorCode(productNotFoundException.getErrorCode()).build();
         return new ResponseEntity(message, HttpStatus.NOT_FOUND);
     }
 

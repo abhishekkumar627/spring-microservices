@@ -16,15 +16,21 @@ public class ProductController {
     ProductService productService;
 
     @PostMapping("/addProduct")
-    public ResponseEntity<Long> addProduct(@RequestBody ProductRequest productRequest){
+    public ResponseEntity<Long> addProduct(@RequestBody ProductRequest productRequest) {
         long productId = productService.addProduct(productRequest);
         return new ResponseEntity(productId, HttpStatus.CREATED);
     }
 
     @GetMapping("/getProduct/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") long productId){
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") long productId) {
         ProductResponse productResponse = productService.getProductById(productId);
         return new ResponseEntity(productResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/reduceQuantity/{id}")
+    public ResponseEntity<Void> reduceProductQuantity(@PathVariable("id") long productId, @RequestParam long quantity) {
+        productService.reduceProductQuantity(productId, quantity);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }
