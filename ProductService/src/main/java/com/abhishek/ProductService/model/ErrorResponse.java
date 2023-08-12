@@ -1,4 +1,4 @@
-package com.abhishek.OrderService.external.response;
+package com.abhishek.ProductService.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

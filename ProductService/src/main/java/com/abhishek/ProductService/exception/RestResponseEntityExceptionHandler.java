@@ -1,6 +1,6 @@
 package com.abhishek.ProductService.exception;
 
-import com.abhishek.ProductService.entity.ErrorMessage;
+import com.abhishek.ProductService.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,11 +11,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleProductExceptionHandler(
+    public ResponseEntity<ErrorResponse> handleProductExceptionHandler(
             ProductNotFoundException productNotFoundException) {
-        ErrorMessage message = ErrorMessage.builder().message(productNotFoundException.getMessage())
+        ErrorResponse errorResponse = ErrorResponse.builder().errorMessage(productNotFoundException.getMessage())
                 .errorCode(productNotFoundException.getErrorCode()).build();
-        return new ResponseEntity(message, HttpStatus.NOT_FOUND);
+        return new ResponseEntity(errorResponse, HttpStatus.NOT_FOUND);
     }
 
 }
