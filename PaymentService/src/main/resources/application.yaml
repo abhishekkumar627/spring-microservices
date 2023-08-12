@@ -1,0 +1,17 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    password: Abh1$h3k
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/paymentdb
+    username: root
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  application:
+    name: PAYMENT-SERVICE
+  config:
+    import: configserver:http://localhost:9296
+
