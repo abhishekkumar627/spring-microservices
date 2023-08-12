@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
     public void reduceProductQuantity(long productId, long quantity) {
         log.info("Started reduce product Quantity with product id : {} and quantity : {}", productId, quantity);
         ProductEntity productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with product id" + productId,
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with product id " + productId,
                         "PRODUCT_NOT_FOUND"));
 
         if (productEntity.getQuantity() < quantity) {
