@@ -1,6 +1,5 @@
 package com.abhishek.OrderService.controller;
 
-
 import com.abhishek.OrderService.model.OrderRequest;
 import com.abhishek.OrderService.service.OrderService;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +20,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/placeOrder")
-    public ResponseEntity<Long> placeOrder(@RequestBody OrderRequest orderRequest){
+    public ResponseEntity<Long> placeOrder(@RequestBody OrderRequest orderRequest) {
         Long orderId = orderService.placeOrder(orderRequest);
         log.info("Order Id : {}", orderId);
         return new ResponseEntity<>(orderId, HttpStatus.OK);
