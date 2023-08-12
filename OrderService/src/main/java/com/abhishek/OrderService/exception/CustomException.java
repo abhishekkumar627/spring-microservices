@@ -1,0 +1,17 @@
+package com.abhishek.OrderService.exception;
+
+import com.abhishek.OrderService.external.decoder.CustomErrorDecoder;
+import lombok.Data;
+
+@Data
+public class CustomException extends RuntimeException {
+
+    private String errorCode;
+    private int status;
+
+    public CustomException(String message, String errorCode, int status) {
+        super(message);
+        this.errorCode = errorCode;
+        this.status = status;
+    }
+}

@@ -1,4 +1,4 @@
-package com.abhishek.ProductService.entity;
+package com.abhishek.OrderService.external.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ErrorMessage {
+public class ErrorResponse {
 
     private String errorCode;
-    private String message;
+    private String errorMessage;
 }
