@@ -11,23 +11,20 @@ import java.time.Instant;
 
 @Service
 @Log4j2
-public class PaymentServiceImpl implements PaymentService{
-
+public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private TransactionDetailsRepository transactionDetailsRepository;
+
     @Override
     public long doPayment(PaymentRequest paymentRequest) {
-        log.info("Payment Request received : {}",paymentRequest);
+        log.info("Payment Request received : {}", paymentRequest);
         TransactionDetails transactionDetails = TransactionDetails.builder()
-                .paymentMode(paymentRequest.getPaymentMode().name())
-                .paymentStatus("SUCCESS")
-                .paymentDate(Instant.now())
-                .orderId(paymentRequest.getOrderId())
-                .referenceNumber(paymentRequest.getReferenceNumber())
-                .amount(paymentRequest.getAmount())
-                .build();
-        log.info("Payment Transaction Request saved with ID : {}",transactionDetails.getId());
+                .paymentMode(paymentRequest.getPaymentMode().name()).paymentStatus("SUCCESS").paymentDate(Instant.now())
+                .orderId(paymentRequest.getOrderId()).referenceNumber(paymentRequest.getReferenceNumber())
+                .amount(paymentRequest.getAmount()).build();
+        transactionDetailsRepository.save(transactionDetails);
+        log.info("Payment Transaction Request saved with ID : {}", transactionDetails.getId());
         return transactionDetails.getId();
     }
 }
