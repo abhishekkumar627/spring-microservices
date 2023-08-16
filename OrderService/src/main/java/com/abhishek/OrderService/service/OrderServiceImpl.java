@@ -5,12 +5,14 @@ import com.abhishek.OrderService.exception.CustomException;
 import com.abhishek.OrderService.external.client.PaymentService;
 import com.abhishek.OrderService.external.client.ProductService;
 import com.abhishek.OrderService.external.request.PaymentRequest;
+import com.abhishek.OrderService.external.response.ProductResponse;
 import com.abhishek.OrderService.model.OrderRequest;
 import com.abhishek.OrderService.model.OrderResponse;
 import com.abhishek.OrderService.repository.OrderRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 
@@ -26,6 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public Long placeOrder(OrderRequest orderRequest) {
@@ -69,8 +74,13 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity order = orderRepository.findById(orderId).orElseThrow(
                 () -> new CustomException("Order with specific id not found " + orderId, "NOT_FOUND", 404));
 
+        ProductResponse productResponse = restTemplate.getForObject(
+                "http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class);
+        log.info("Received Product Response details with product ID : {}", order.getProductId());
+
         OrderResponse orderResponse = OrderResponse.builder().orderStatus(order.getOrderStatus()).orderId(order.getId())
                 .amount(order.getAmount()).orderDate(order.getOrderDate()).build();
+        orderResponse.setProductDetails(productResponse);
         return orderResponse;
     }
 }
