@@ -1,10 +1,12 @@
 package com.abhishek.OrderService.service;
 
 import com.abhishek.OrderService.entity.OrderEntity;
+import com.abhishek.OrderService.exception.CustomException;
 import com.abhishek.OrderService.external.client.PaymentService;
 import com.abhishek.OrderService.external.client.ProductService;
 import com.abhishek.OrderService.external.request.PaymentRequest;
 import com.abhishek.OrderService.model.OrderRequest;
+import com.abhishek.OrderService.model.OrderResponse;
 import com.abhishek.OrderService.repository.OrderRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +61,16 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         log.info("Order placed successfully with order id : {}", order.getId());
         return order.getId();
+    }
+
+    @Override
+    public OrderResponse getOrderDetails(Long orderId) {
+        log.info("Getting order details with order ID : {}", orderId);
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(
+                () -> new CustomException("Order with specific id not found " + orderId, "NOT_FOUND", 404));
+
+        OrderResponse orderResponse = OrderResponse.builder().orderStatus(order.getOrderStatus()).orderId(order.getId())
+                .amount(order.getAmount()).orderDate(order.getOrderDate()).build();
+        return orderResponse;
     }
 }
