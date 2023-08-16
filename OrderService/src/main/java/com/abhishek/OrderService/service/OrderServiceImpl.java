@@ -1,7 +1,9 @@
 package com.abhishek.OrderService.service;
 
 import com.abhishek.OrderService.entity.OrderEntity;
+import com.abhishek.OrderService.external.client.PaymentService;
 import com.abhishek.OrderService.external.client.ProductService;
+import com.abhishek.OrderService.external.request.PaymentRequest;
 import com.abhishek.OrderService.model.OrderRequest;
 import com.abhishek.OrderService.repository.OrderRepository;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +22,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private PaymentService paymentService;
+
     @Override
     public Long placeOrder(OrderRequest orderRequest) {
         // Order Entity - Save the data with status order created
@@ -32,11 +37,27 @@ public class OrderServiceImpl implements OrderService {
         productService.reduceProductQuantity(orderRequest.getProductId(), orderRequest.getQuantity());
 
         log.info("placing order with quantity requsted : {} ", orderRequest.getQuantity());
-        OrderEntity entity = OrderEntity.builder().productId(orderRequest.getProductId())
+        OrderEntity order = OrderEntity.builder().productId(orderRequest.getProductId())
                 .quantity(orderRequest.getQuantity()).orderDate(Instant.now()).orderStatus("CREATED")
                 .amount(orderRequest.getTotalAmount()).build();
-        entity = orderRepository.save(entity);
-        log.info("Order placed successfully with order id : {}", entity.getId());
-        return entity.getId();
+        order = orderRepository.save(order);
+
+        log.info("Calling Payment Service to complete the payment ");
+        PaymentRequest paymentRequest = PaymentRequest.builder().orderId(order.getId())
+                .paymentMode(orderRequest.getPaymentMode()).amount(orderRequest.getTotalAmount()).build();
+        String orderStatus = null;
+        try {
+            log.info("Trying to process payment with paymentRequest : {} ", paymentRequest);
+            paymentService.doPayment(paymentRequest);
+            orderStatus = "PLACED";
+            log.info("Payment completed with orderStatus : {}", orderStatus);
+        } catch (Exception e) {
+            log.info("Payment failed with orderStatus : {}", orderStatus);
+            orderStatus = "PAYMENT_FAILED";
+        }
+        order.setOrderStatus(orderStatus);
+        orderRepository.save(order);
+        log.info("Order placed successfully with order id : {}", order.getId());
+        return order.getId();
     }
 }
