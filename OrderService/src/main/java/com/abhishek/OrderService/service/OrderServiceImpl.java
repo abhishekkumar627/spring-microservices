@@ -5,6 +5,7 @@ import com.abhishek.OrderService.exception.CustomException;
 import com.abhishek.OrderService.external.client.PaymentService;
 import com.abhishek.OrderService.external.client.ProductService;
 import com.abhishek.OrderService.external.request.PaymentRequest;
+import com.abhishek.OrderService.external.response.PaymentResponse;
 import com.abhishek.OrderService.external.response.ProductResponse;
 import com.abhishek.OrderService.model.OrderRequest;
 import com.abhishek.OrderService.model.OrderResponse;
@@ -73,14 +74,21 @@ public class OrderServiceImpl implements OrderService {
         log.info("Getting order details with order ID : {}", orderId);
         OrderEntity order = orderRepository.findById(orderId).orElseThrow(
                 () -> new CustomException("Order with specific id not found " + orderId, "NOT_FOUND", 404));
-
+        log.info("Getting product details with order ID : {}", orderId);
         ProductResponse productResponse = restTemplate.getForObject(
                 "http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class);
         log.info("Received Product Response details with product ID : {}", order.getProductId());
 
+        log.info("Getting payment details with order ID : {}", orderId);
+        PaymentResponse paymentResponse = restTemplate.getForObject(
+                "http://PAYMENT-SERVICE/payment/order/"+orderId, PaymentResponse.class);
+
+        log.info("Received payment Response details with order ID : {}", orderId);
+
         OrderResponse orderResponse = OrderResponse.builder().orderStatus(order.getOrderStatus()).orderId(order.getId())
                 .amount(order.getAmount()).orderDate(order.getOrderDate()).build();
         orderResponse.setProductDetails(productResponse);
+        orderResponse.setPaymentResponse(paymentResponse);
         return orderResponse;
     }
 }

@@ -1,5 +1,6 @@
 package com.abhishek.OrderService.model;
 
+import com.abhishek.OrderService.external.response.PaymentResponse;
 import com.abhishek.OrderService.external.response.ProductResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +19,5 @@ public class OrderResponse {
     private Long amount;
     private String orderStatus;
     private ProductResponse productDetails;
+    private PaymentResponse paymentResponse;
 }
