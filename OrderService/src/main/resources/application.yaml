@@ -23,7 +23,7 @@ spring:
         registration:
           internal-client:
             provider: okta
-            authorizationGrantType: client_crendentials
+            authorizationGrantType: client_credentials
             scope: internal
             clientId: 0oabduy4gaBUtTojZ5d7
             clientSecret: cvfr9OC3nLowurFT83mf4lklceo8BeAnwhVvOfIE9r-OvhWrRdHRxSWw4ziBxWW_
