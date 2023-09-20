@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authorizedRequests->authorizedRequests
+        http.authorizeRequests(authorizedRequests -> authorizedRequests
                         .antMatchers("/payment/**")
                         .hasAuthority("SCOPE_internal")
                         .anyRequest()

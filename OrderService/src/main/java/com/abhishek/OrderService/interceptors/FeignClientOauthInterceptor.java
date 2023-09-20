@@ -21,6 +21,6 @@ public class FeignClientOauthInterceptor implements RequestInterceptor {
                         .principal("internal")
                         .build()
         ).getAccessToken().getTokenValue();
-        requestTemplate.header("Authorization","Bearer" + token);
+        requestTemplate.header("Authorization","Bearer " + token);
     }
 }

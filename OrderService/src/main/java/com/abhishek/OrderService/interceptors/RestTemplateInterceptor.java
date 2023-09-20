@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 
 import java.io.IOException;
 
-@Configuration
 public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
 
 
