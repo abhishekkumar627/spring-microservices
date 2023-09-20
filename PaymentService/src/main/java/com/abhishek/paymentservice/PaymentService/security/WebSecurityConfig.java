@@ -1,4 +1,4 @@
-package com.abhishek.ProductService.security;
+package com.abhishek.paymentservice.PaymentService.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +10,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
-
     @Bean
-    public SecurityFilterChain securityWebFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authroizeRequest -> authroizeRequest.anyRequest().authenticated())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests(authorizedRequests->authorizedRequests
+                        .antMatchers("/payment/**")
+                        .hasAuthority("SCOPE_internal")
+                        .anyRequest()
+                        .authenticated())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
     }
-
 }
