@@ -60,8 +60,8 @@ public class OrderServiceImpl implements OrderService {
             orderStatus = "PLACED";
             log.info("Payment completed with orderStatus : {}", orderStatus);
         } catch (Exception e) {
-            log.info("Payment failed with orderStatus : {}", orderStatus);
             orderStatus = "PAYMENT_FAILED";
+            log.error("Payment failed with orderStatus : {}", orderStatus);
         }
         order.setOrderStatus(orderStatus);
         orderRepository.save(order);
