@@ -4,8 +4,10 @@ import com.abhishek.OrderService.entity.OrderEntity;
 import com.abhishek.OrderService.exception.CustomException;
 import com.abhishek.OrderService.external.client.PaymentService;
 import com.abhishek.OrderService.external.client.ProductService;
+import com.abhishek.OrderService.external.request.PaymentRequest;
 import com.abhishek.OrderService.external.response.PaymentResponse;
 import com.abhishek.OrderService.external.response.ProductResponse;
+import com.abhishek.OrderService.model.OrderRequest;
 import com.abhishek.OrderService.model.OrderResponse;
 import com.abhishek.OrderService.model.PaymentMode;
 import com.abhishek.OrderService.repository.OrderRepository;
@@ -17,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -104,6 +108,37 @@ class OrderServiceImplTest {
         assertNotNull(orderResponse);
         assertEquals(orderResponse.getProductDetails(),null);
 
+    }
+
+    @Test
+    @DisplayName("place order - success Scenario")
+    void test_When_Place_Order_Success(){
+        OrderRequest orderRequest = getMockOrderRequest();
+        OrderEntity order = getOrderEntity();
+        when(productService.reduceProductQuantity(anyLong(),anyLong()))
+                .thenReturn(new ResponseEntity<Void>(HttpStatus.OK));
+        when(orderRepository.save(any(OrderEntity.class)))
+                .thenReturn(order);
+        when(paymentService.doPayment(any(PaymentRequest.class)))
+                .thenReturn(new ResponseEntity<Long>(1L, HttpStatus.OK));
+        Long orderId = orderService.placeOrder(orderRequest);
+
+        verify(orderRepository,times(2)).save(any(OrderEntity.class));
+        verify(productService,times(1)).reduceProductQuantity(anyLong(),anyLong());
+        verify(paymentService,times(1)).doPayment(any(PaymentRequest.class));
+
+        assertEquals(order.getId(),orderId);
+
+    }
+
+
+    private OrderRequest getMockOrderRequest() {
+        return OrderRequest.builder()
+                .paymentMode(PaymentMode.CASH)
+                .totalAmount(100)
+                .productId(1)
+                .quantity(10)
+                .build();
     }
 
     private PaymentResponse getMockPaymentResponse() {
