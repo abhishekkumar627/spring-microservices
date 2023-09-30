@@ -1,6 +1,7 @@
 package com.abhishek.OrderService.service;
 
 import com.abhishek.OrderService.entity.OrderEntity;
+import com.abhishek.OrderService.exception.CustomException;
 import com.abhishek.OrderService.external.client.PaymentService;
 import com.abhishek.OrderService.external.client.ProductService;
 import com.abhishek.OrderService.external.response.PaymentResponse;
@@ -20,6 +21,10 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class OrderServiceImplTest {
@@ -44,24 +49,61 @@ class OrderServiceImplTest {
     void test_When_Order_Success(){
         //Mock services
         OrderEntity order = getOrderEntity();
-        Mockito.when(orderRepository.findById(ArgumentMatchers.anyLong()))
+        when(orderRepository.findById(anyLong()))
                 .thenReturn(Optional.of(order));
-        Mockito.when(restTemplate.getForObject(
+        when(restTemplate.getForObject(
                 "http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class))
                 .thenReturn(getMockProductResponse());
-        Mockito.when(restTemplate.getForObject(
+        when(restTemplate.getForObject(
                 "http://PAYMENT-SERVICE/payment/order/"+order.getId(), PaymentResponse.class))
                 .thenReturn(getMockPaymentResponse());
         //Actual Method call
         OrderResponse orderResponse = orderService.getOrderDetails(Long.valueOf(1));
         //Verification internal service calls
-        Mockito.verify(orderRepository,Mockito.times(1)).findById(ArgumentMatchers.anyLong());
-        Mockito.verify(restTemplate,Mockito.times(1)).getForObject("http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class);
-        Mockito.verify(restTemplate,Mockito.times(1)).getForObject("http://PAYMENT-SERVICE/payment/order/"+order.getId(), PaymentResponse.class);
+        verify(orderRepository, times(1)).findById(anyLong());
+        verify(restTemplate, times(1)).getForObject("http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class);
+        verify(restTemplate, times(1)).getForObject("http://PAYMENT-SERVICE/payment/order/"+order.getId(), PaymentResponse.class);
         //Assert the result.
-        Assertions.assertNotNull(order);
-        Assertions.assertNotNull(orderResponse);
-        Assertions.assertEquals(order.getId(),orderResponse.getOrderId());
+        assertNotNull(order);
+        assertNotNull(orderResponse);
+        assertEquals(order.getId(),orderResponse.getOrderId());
+    }
+    @Test
+    @DisplayName("Get Orders - Failure Scenario")
+    void test_when_Get_Order_NOT_FOUND_then_Not_Found(){
+        when(orderRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(null));
+        //Actual Method call
+
+        CustomException exception = assertThrows(CustomException.class,()->orderService.getOrderDetails(Long.valueOf(1)));
+
+        verify(orderRepository, times(1)).findById(anyLong());
+
+        assertEquals("NOT_FOUND",exception.getErrorCode());
+        assertEquals(404,exception.getStatus());
+
+    }
+
+    @Test
+    @DisplayName("Get Orders - Failure Scenario no productResponse")
+    void test_when_Get_Order_Product_Details_not_Found(){
+        OrderEntity order = getOrderEntity();
+        when(orderRepository.findById(anyLong()))
+                .thenReturn(Optional.of(order));
+        when(restTemplate.getForObject(
+                "http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class))
+                .thenReturn(null);
+        when(restTemplate.getForObject(
+                "http://PAYMENT-SERVICE/payment/order/"+order.getId(), PaymentResponse.class))
+                .thenReturn(getMockPaymentResponse());
+        //Actual Method call
+        OrderResponse orderResponse = orderService.getOrderDetails(Long.valueOf(1));
+        verify(orderRepository, times(1)).findById(anyLong());
+        verify(restTemplate, times(1)).getForObject("http://PRODUCT-SERVICE/product/getProduct/" + order.getProductId(), ProductResponse.class);
+        assertNotNull(order);
+        assertNotNull(orderResponse);
+        assertEquals(orderResponse.getProductDetails(),null);
+
     }
 
     private PaymentResponse getMockPaymentResponse() {
