@@ -2,7 +2,10 @@ package com.abhishek.OrderService.controller;
 
 import com.abhishek.OrderService.OrderServiceConfig;
 import com.abhishek.OrderService.entity.OrderEntity;
+import com.abhishek.OrderService.external.response.PaymentResponse;
+import com.abhishek.OrderService.external.response.ProductResponse;
 import com.abhishek.OrderService.model.OrderRequest;
+import com.abhishek.OrderService.model.OrderResponse;
 import com.abhishek.OrderService.model.PaymentMode;
 import com.abhishek.OrderService.repository.OrderRepository;
 import com.abhishek.OrderService.service.OrderService;
@@ -12,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -39,10 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.util.StreamUtils.copyToString;
 
-@SpringBootTest({ "server.port=0" })
+@SpringBootTest({"server.port=0"})
 @EnableConfigurationProperties
 @AutoConfigureMockMvc
-@ContextConfiguration(classes = { OrderServiceConfig.class })
+@ContextConfiguration(classes = {OrderServiceConfig.class})
 public class OrderControllerTest {
     @Autowired
     private OrderService orderService;
@@ -123,5 +127,52 @@ public class OrderControllerTest {
 
     private OrderRequest getMockOrderRequest() {
         return OrderRequest.builder().quantity(10).productId(1).totalAmount(200).paymentMode(PaymentMode.CASH).build();
+    }
+
+    @Test
+    public void test_When_PlaceOrderWithWrongAccess_thenThrow403() throws Exception {
+        // First place order
+        // Get Order by Order ID FROM DB AND CHECK
+        // CHECK OUTPUT
+
+        OrderRequest orderRequest = getMockOrderRequest();
+        MvcResult mvcResult = mockMvc
+                .perform(MockMvcRequestBuilders.post("/order/placeOrder")
+                        .with(jwt()
+                                .authorities(new SimpleGrantedAuthority("Admin")))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(orderRequest)))
+                .andExpect(MockMvcResultMatchers.status().isForbidden()).andReturn();
+
+    }
+
+    @Test
+    public void test_WhenGetOrder_Success() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/order/getOrderDetails/1")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("Admin")))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String actualResponse = mvcResult.getResponse().getContentAsString();
+        OrderEntity order = orderRepository.findById(1l).get();
+        String expectedResponse = getOrderResponse(order);
+        Assertions.assertEquals(expectedResponse,actualResponse);
+    }
+
+    private String getOrderResponse(OrderEntity order) throws IOException {
+        ProductResponse productResponse
+                = objectMapper.readValue(
+                        copyToString(OrderControllerTest.class.getClassLoader().getResourceAsStream("mock/GetProduct.json"), defaultCharset()),
+                        ProductResponse.class);
+        PaymentResponse paymentResponse
+                = objectMapper.readValue(
+                copyToString(OrderControllerTest.class.getClassLoader().getResourceAsStream("mock/GetPayment.json"), defaultCharset()),
+                PaymentResponse.class);
+        OrderResponse orderResponse = OrderResponse.builder().orderStatus(order.getOrderStatus()).orderId(order.getId())
+                .amount(order.getAmount()).orderDate(order.getOrderDate()).build();
+        orderResponse.setProductDetails(productResponse);
+        orderResponse.setPaymentResponse(paymentResponse);
+        return objectMapper.writeValueAsString(orderResponse);
     }
 }
