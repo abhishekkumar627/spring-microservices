@@ -175,4 +175,14 @@ public class OrderControllerTest {
         orderResponse.setPaymentResponse(paymentResponse);
         return objectMapper.writeValueAsString(orderResponse);
     }
+
+    @Test
+    public void test_WhenGetOrder_OrderNotFound() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/order/getOrderDetails/2")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("Admin")))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                ).andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andReturn();
+
+    }
 }
