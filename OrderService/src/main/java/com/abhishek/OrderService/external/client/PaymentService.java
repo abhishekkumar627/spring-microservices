@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-@CircuitBreaker(name = "external",fallbackMethod = "fallBack")
+
+@CircuitBreaker(name = "external", fallbackMethod = "fallBack")
 @FeignClient(name = "PAYMENT-SERVICE/payment")
 public interface PaymentService {
     @PostMapping("/doPayment")
     public ResponseEntity<Long> doPayment(@RequestBody PaymentRequest paymentRequest);
 
-    default void fallBack(Exception e){
-        throw new CustomException("Payment Service is not available","NOT_AVAILABLE", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    default ResponseEntity<Long> fallBack(Exception e) {
+        throw new CustomException("Payment Service is not available", "NOT_AVAILABLE",
+                HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

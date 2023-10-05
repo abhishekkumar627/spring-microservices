@@ -1,15 +1,19 @@
 package com.abhishek.OrderService.controller;
 
 import com.abhishek.OrderService.OrderServiceConfig;
+import com.abhishek.OrderService.entity.OrderEntity;
+import com.abhishek.OrderService.model.OrderRequest;
+import com.abhishek.OrderService.model.PaymentMode;
 import com.abhishek.OrderService.repository.OrderRepository;
 import com.abhishek.OrderService.service.OrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,23 +21,28 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.StreamUtils;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static java.nio.charset.Charset.*;
-import static org.springframework.util.StreamUtils.*;
+import static java.nio.charset.Charset.defaultCharset;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.util.StreamUtils.copyToString;
 
-
-@SpringBootTest({"server.port=0"})
+@SpringBootTest({ "server.port=0" })
 @EnableConfigurationProperties
 @AutoConfigureMockMvc
-@ContextConfiguration(classes = {OrderServiceConfig.class})
+@ContextConfiguration(classes = { OrderServiceConfig.class })
 public class OrderControllerTest {
     @Autowired
     private OrderService orderService;
@@ -45,75 +54,74 @@ public class OrderControllerTest {
 
     @RegisterExtension
     private WireMockExtension wireMockExtension = WireMockExtension.newInstance()
-            .options(WireMockConfiguration.wireMockConfig().port(8080))
-            .build();
+            .options(WireMockConfiguration.wireMockConfig().port(8080)).build();
 
-    private ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules()
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,false)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+    private ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules()
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     @BeforeEach
     void setup() throws IOException {
         getProductDetailsResponse();
-        getPaymentDetailsResponse();
         doPayment();
+        getPaymentDetailsResponse();
         reduceProductQuantity();
     }
 
     private void reduceProductQuantity() {
-        //PUT product/reduceQuantity/{id}
-        wireMockExtension.stubFor(post(urlMatching("product/reduceQuantity/.*"))
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
+        // PUT product/reduceQuantity/{id}
+        wireMockExtension.stubFor(put(urlMatching("/product/reduceQuantity/.*")).willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value()).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)));
     }
 
     private void doPayment() {
-        //POST payment/doPayment
-        wireMockExtension.stubFor(post(urlEqualTo("payment/doPayment"))
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
+        // POST payment/doPayment
+        wireMockExtension.stubFor(post(urlEqualTo("/payment/doPayment")).willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value()).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)));
     }
 
     private void getPaymentDetailsResponse() throws IOException {
-        //GET payment/order/1
-        wireMockExtension.stubFor(get(urlMatching("payment/order/.*"))
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(copyToString(
-                                        OrderControllerTest.class.getResourceAsStream("mock/GetPayment.json"),
-                                        defaultCharset()
-                                )
-                        )
-                )
-        );
+        // GET payment/order/1
+        wireMockExtension.stubFor(get(urlMatching("/payment/order/.*")).willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value()).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .withBody(copyToString(OrderControllerTest.class.getClassLoader().getResourceAsStream("mock/GetPayment.json"),
+                        defaultCharset()))));
     }
 
     private void getProductDetailsResponse() throws IOException {
         // GET product/getProduct/1
-        wireMockExtension.stubFor(get("/product/getProduct/1")
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(copyToString(
-                                OrderControllerTest.class.getResourceAsStream("mock/GetProduct.json"),
-                                defaultCharset()
-                                )
-                        )
-                )
-        );
+        wireMockExtension.stubFor(get("/product/getProduct/1").willReturn(aResponse().withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE).withBody(copyToString(
+                        OrderControllerTest.class.getClassLoader().getResourceAsStream("mock/GetProduct.json"), defaultCharset()))));
     }
 
-    public void test_When_PlaceOrder_DoPayment_Success(){
-        //First place order
-        //Get Order by Order ID FROM DB AND CHECK
-        //CHECK OUTPUT
+    @Test
+    public void test_When_PlaceOrder_DoPayment_Success() throws Exception {
+        // First place order
+        // Get Order by Order ID FROM DB AND CHECK
+        // CHECK OUTPUT
+
+        OrderRequest orderRequest = getMockOrderRequest();
+        MvcResult mvcResult = mockMvc
+                .perform(MockMvcRequestBuilders.post("/order/placeOrder")
+                        .with(jwt()
+                                .authorities(new SimpleGrantedAuthority("Customer")))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(orderRequest)))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+
+        String orderId = mvcResult.getResponse().getContentAsString();
+        Optional<OrderEntity> order = orderRepository.findById(Long.valueOf(orderId));
+        assertTrue(order.isPresent());
+        OrderEntity o = order.get();
+        assertEquals(Long.parseLong(orderId), o.getId());
+        assertEquals("PLACED", o.getOrderStatus());
+        assertEquals(orderRequest.getTotalAmount(), o.getAmount());
+        assertEquals(orderRequest.getQuantity(), o.getQuantity());
+
+    }
+
+    private OrderRequest getMockOrderRequest() {
+        return OrderRequest.builder().quantity(10).productId(1).totalAmount(200).paymentMode(PaymentMode.CASH).build();
     }
 }

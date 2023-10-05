@@ -28,21 +28,18 @@ public class ApplicationConfig {
     public RestTemplate restTemplate() {
         RestTemplate template = new RestTemplate();
         template.setInterceptors(Arrays.asList(new RestTemplateInterceptor(
-                clientManager(clientRegistrationRepository, oAuth2AuthorizedClientRepository)
-        )));
+                clientManager(clientRegistrationRepository, oAuth2AuthorizedClientRepository))));
         return template;
     }
 
     @Bean
     public OAuth2AuthorizedClientManager clientManager(ClientRegistrationRepository clientRegistrationRepository,
-                                                       OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository) {
-        OAuth2AuthorizedClientProvider oAuth2AuthorizedClientProvider =
-                OAuth2AuthorizedClientProviderBuilder.builder()
-                        .clientCredentials()
-                        .build();
+            OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository) {
+        OAuth2AuthorizedClientProvider oAuth2AuthorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+                .clientCredentials().build();
 
-        DefaultOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager =
-                new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, oAuth2AuthorizedClientRepository);
+        DefaultOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager = new DefaultOAuth2AuthorizedClientManager(
+                clientRegistrationRepository, oAuth2AuthorizedClientRepository);
         oAuth2AuthorizedClientManager.setAuthorizedClientProvider(oAuth2AuthorizedClientProvider);
         return oAuth2AuthorizedClientManager;
     }

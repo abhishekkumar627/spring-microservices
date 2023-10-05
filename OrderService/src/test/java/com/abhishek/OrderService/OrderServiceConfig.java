@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 public class OrderServiceConfig {
 
     @Bean
-    public ServiceInstanceListSupplier supplier(){
+    public ServiceInstanceListSupplier supplier() {
         return new TestServiceInstanceListSupplier();
     }
 }

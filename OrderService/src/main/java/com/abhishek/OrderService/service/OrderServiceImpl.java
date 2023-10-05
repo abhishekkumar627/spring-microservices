@@ -80,8 +80,8 @@ public class OrderServiceImpl implements OrderService {
         log.info("Received Product Response details with product ID : {}", order.getProductId());
 
         log.info("Getting payment details with order ID : {}", orderId);
-        PaymentResponse paymentResponse = restTemplate.getForObject(
-                "http://PAYMENT-SERVICE/payment/order/"+orderId, PaymentResponse.class);
+        PaymentResponse paymentResponse = restTemplate.getForObject("http://PAYMENT-SERVICE/payment/order/" + orderId,
+                PaymentResponse.class);
 
         log.info("Received payment Response details with order ID : {}", orderId);
 
