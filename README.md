@@ -117,6 +117,21 @@ to go inside redis just enter
 `KEYS *`
 `exit` -- to exit the redis and again exit to exit container.
 
+----------------------------------------------------
+
+1. `docker images`
+2. `docker ps`
+3. To clear everything we need to make sure every container is stopped.
+4. docker stop container-1 container-2
+5. `docker ps` - To check running containers
+6. `docker ps -a` - To check each container in any condition.
+7. `docker rm container-id` to remove
+8. `docker images` All docker images
+9. `docker rmi image-id OR imagename:tagname` to delete docker image
+10. To delete all in once
+    `docker system prune -a`
+11. 
+
 
 
 
