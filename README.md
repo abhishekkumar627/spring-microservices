@@ -130,9 +130,15 @@ to go inside redis just enter
 9. `docker rmi image-id OR imagename:tagname` to delete docker image
 10. To delete all in once
     `docker system prune -a`
-11. 
 
 
+To build custom docker image
+Create Dockerfile and then build project and then run command
 
+`docker build -t abhishekkumar627/serviceregistry:0.0.1 .`
+
+
+To run custom docker image
+`docker run -d -p8761:8761 --name serviceregistry 28ad2205a045`
 
 
