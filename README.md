@@ -86,3 +86,38 @@ example :  `docker run --name redis-latest -p6379:6379 -d redis:latest`
 
 `docker run --help`
 
+13. Debugging in docker
+    `docker images`
+    `docker images -a`
+
+14. All information of image
+
+`docker inpsect imageId`
+
+`docker inpsect imageId`
+
+15. All information of container
+
+`docker ps`
+
+`docker inspect container-id`
+
+16. To see logs of the container
+
+`docker ps`
+
+`docker logs container-id`
+
+17. To go inside the container and run commands
+
+`docker exec -it container-id /bin/sh`
+
+to go inside redis just enter
+`redis-cli`
+`KEYS *`
+`exit` -- to exit the redis and again exit to exit container.
+
+
+
+
+
