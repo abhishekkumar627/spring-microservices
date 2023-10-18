@@ -141,4 +141,30 @@ Create Dockerfile and then build project and then run command
 To run custom docker image
 `docker run -d -p8761:8761 --name serviceregistry 28ad2205a045`
 
+To build custom docker image
+Create Dockerfile and then build project and then run command to make this version latest as well
+
+`docker build -t abhishekkumar627/configserver:0.0.1 -t abhishekkumar627/configserver:latest .`
+
+To run custom docker image
+
+`docker run -d -p9296:9296 --name configserver a3acd545f428`
+
+To check logs of container for any issue
+
+`docker logs container-id`
+
+If any issue in the container then stop it using
+Like in the case of config server not able to connect to localhost and its in docker env.
+
+`docker stop container-id`
+
+and remove it using 
+
+`docker rm container-id`
+
+To resolve docker local env issue we need to pass runtime env variable value to pass host as host.docker.internal so that it can communicate to service-registery in same docker platform.
+
+`docker run -d -p9296:9296 -e EUREKA_SERVER_ADDRESS=http://host.docker.internal:8761/eureka --name configserver a3acd545f428`
+
 
