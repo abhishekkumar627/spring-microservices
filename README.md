@@ -167,4 +167,14 @@ To resolve docker local env issue we need to pass runtime env variable value to 
 
 `docker run -d -p9296:9296 -e EUREKA_SERVER_ADDRESS=http://host.docker.internal:8761/eureka --name configserver a3acd545f428`
 
+==============================
 
+To run Cloudgateway as image
+
+1. First define the variable to replace localhost in application.yaml
+2. build the project using `mvn clean install`
+3. Build docker image with command
+   `docker build -t abhishekkumar627/cloudgateway:latest .`
+4. Run the image using command
+   `docker run -d -p9090:9090 -e CLOUD_GATEWAY_URL=host.docker.internal -e EUREKA_SERVER_ADDRESS=http://host.docker.internal:8761/eureka --name cloudgateway image-id
+`
