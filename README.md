@@ -207,3 +207,8 @@ Run using
 Delete containers using command
 
 `docker-compose -f docker-compose.yml down`
+
+
+To make image using jib plugin
+
+`mvn clean install jib:build`
