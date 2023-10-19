@@ -184,3 +184,26 @@ To push your image to docker hub repository
 2. To push `docker push abhishekkumar627/cloudgateway:latest`
 3. To push `docker push abhishekkumar627/serviceregistry:0.0.1`
 4. To push `docker push abhishekkumar627/configserver:latest`
+
+To stop containers 
+---------------------------------------------------------------
+`docker stop container-id-1 container-id-2 container-id-3`
+
+To clean everything
+`docker system prune -a`
+`clear`
+ 
+Create images again.
+1. `docker build -t abhishekkumar627/cloudgateway:latest .`
+2. `docker build -t abhishekkumar627/configserver:0.0.1 -t abhishekkumar627/configserver:latest .`
+3. `docker build -t abhishekkumar627/serviceregistry:0.0.1 .`
+
+Create docker-compose.yml file
+
+Run using
+
+`docker-compose -f docker-compose.yml up -d`
+
+Delete containers using command
+
+`docker-compose -f docker-compose.yml down`
