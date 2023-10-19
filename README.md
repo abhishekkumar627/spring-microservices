@@ -212,3 +212,5 @@ Delete containers using command
 To make image using jib plugin
 
 `mvn clean install jib:build`
+
+Make sure to have settings.xml configured which have your usename password and docker hub url to authenticate to push to it.
