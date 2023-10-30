@@ -214,3 +214,83 @@ To make image using jib plugin
 `mvn clean install jib:build`
 
 Make sure to have settings.xml configured which have your usename password and docker hub url to authenticate to push to it.
+
+### KUBERNETES
+To check minikube status
+
+`minikube status`
+
+To start the minikube
+
+`minikube start`
+
+To get the namespaces
+
+`kubectl get namespaces`
+
+To get the pod information
+
+`kubectl get pods`
+
+To get the services information
+
+`kubectl get services`
+
+To get the deployment
+
+`kubectl get deployment`
+
+To delete everything in the cluster
+
+`kubectl delete all --all`
+
+To get all the details of pods,services,deployment,namespaces
+
+`kubectl get all`
+
+#### Create Deployment
+
+`kubectl create deployment nginx --image=nginx`
+
+To get the detailed info about deployment
+
+`kubectl get all -o wide`
+
+To get info about what executed while deployment
+
+`kubectl describe deployment nginx`
+
+
+To get information regarding pod how its created
+
+`kubectl get pod`
+
+`kubectl describe pod nginx-77b4fdf86c-2cp5n | pod name`
+
+
+
+To get logs of the pod/container running
+
+`kubectl logs nginx-77b4fdf86c-2cp5n`
+
+
+To execute command within pod/container
+
+`kubectl exec -it nginx-77b4fdf86c-2cp5n --/bin/bash`
+
+
+To edit the deployment changes
+
+`kubectl edit <resource>`
+
+`kubectl edit deployment <name>`
+
+`kubectl edit deployment` --> Takes the default one
+
+Change the default replicas value to 3 and save the file, 
+it will automatically takes the changes
+
+
+To delete all the services , pods related to deployment just delete the 
+deployment
+`kubectl delete deployment nginx`
