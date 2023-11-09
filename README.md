@@ -250,6 +250,10 @@ To get all the details of pods,services,deployment,namespaces
 
 #### Create Deployment
 
+To get the help regarding any command
+`kubectl create --h`
+
+
 `kubectl create deployment nginx --image=nginx`
 
 To get the detailed info about deployment
