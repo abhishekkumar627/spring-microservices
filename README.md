@@ -216,6 +216,11 @@ To make image using jib plugin
 Make sure to have settings.xml configured which have your usename password and docker hub url to authenticate to push to it.
 
 ### KUBERNETES
+
+First clean everything if its not working
+
+`minikube delete --all`
+
 To check minikube status
 
 `minikube status`
@@ -251,7 +256,7 @@ To get all the details of pods,services,deployment,namespaces
 #### Create Deployment
 
 To get the help regarding any command
-`kubectl create --h`
+`kubectl create --help`
 
 
 `kubectl create deployment nginx --image=nginx`
