@@ -65,3 +65,10 @@ To restrict team wise resources use namespaces.
     1. LoadBalancer Service --  spec type as LoadBalancer only one port : 80 , take all requests from external world.
     2. Nodeport service -- spec type as NodePort, port range - (33000-32767)
 
+#### Ingres service
+
+Check the addons available in minikube
+`minikube addons list`
+
+To enable ingress
+`minikube addons enable ingress`
