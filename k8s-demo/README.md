@@ -72,3 +72,22 @@ Check the addons available in minikube
 
 To enable ingress
 `minikube addons enable ingress`
+
+Difference between deployment and stateful set
+
+Chrome -- > Java application  -- >  Mysql
+
+Java application will only do the processing of data 
+Mysql stores that data thus 
+
+pods of java appn are only deployments
+pods of mysql are stateful sets pods that maintain state of the application.
+
+##### volumes
+1. Whenever any issue is their with the pod, it destroys itself and recreate it, with help of volumes we safeguard our application data.
+2. Storage should not depend on the pod lifecycle.
+3. Storage should be available to all the nodes.
+4. Storage should survive cluster crashes.
+5. persistent volume = yaml configuration 
+6. Persistent volume needs to be claimed thus pers-vol-claim configuration needs to be provided for this.
+7. For dynamic peristent volume - Storage class is being used.
