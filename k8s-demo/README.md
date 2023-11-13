@@ -24,7 +24,7 @@ Services and deployments gets created using these.
 
 `kubectl delete -f .\svc.yaml`  
 
-# Kubernetes Namespaces
+##### Kubernetes Namespaces
 
 `kubectl create namespace my-namespace`
 
@@ -43,7 +43,7 @@ By default its comes with 4 namespaces.
 
 To restrict team wise resources use namespaces.
 
-#### To create deployment in my namespace
+##### To create deployment in my namespace
 `kubectl apply -f .\deploy.yaml -n my-namespace`
 
 `kubectl get all`
@@ -56,7 +56,7 @@ To restrict team wise resources use namespaces.
 #### Not in a namespace
 `kubectl api-resources --namespaced=false`
 
-# Kubernetes Services
+##### Kubernetes Services
 
 1. Internal service -- > 
     1. Cluster Ip service -- Ex. deploy.yaml/svc.yaml
@@ -65,7 +65,7 @@ To restrict team wise resources use namespaces.
     1. LoadBalancer Service --  spec type as LoadBalancer only one port : 80 , take all requests from external world.
     2. Nodeport service -- spec type as NodePort, port range - (33000-32767)
 
-#### Ingres service
+##### Ingres service
 
 Check the addons available in minikube
 `minikube addons list`
@@ -91,3 +91,13 @@ pods of mysql are stateful sets pods that maintain state of the application.
 5. persistent volume = yaml configuration 
 6. Persistent volume needs to be claimed thus pers-vol-claim configuration needs to be provided for this.
 7. For dynamic peristent volume - Storage class is being used.
+
+##### Kubernetes Health Checks
+1. Liveness - Many applicaiton running for long time, eventually transition to broken states and cannot recover
+except by being restarted. Kubernetes provides Liveness probe to detect and remedy such situations.
+
+2. Readiness - Is your application ready to serve requests or not, once all dependent app are started and app is ready then its ready to serve the traffic.
+
+These can be defineds using, http, tcp, commands as well as gRPc requests.
+
+3. startup probe is used in legacy appn.
