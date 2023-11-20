@@ -13,11 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests(authorizedRequests -> authorizedRequests
-                        .antMatchers("/payment/**")
-                        .hasAuthority("SCOPE_internal")
-                        .anyRequest()
-                        .authenticated())
+        http.authorizeRequests(authorizedRequests -> authorizedRequests.antMatchers("/payment/**")
+                .hasAuthority("SCOPE_internal").anyRequest().authenticated())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
     }

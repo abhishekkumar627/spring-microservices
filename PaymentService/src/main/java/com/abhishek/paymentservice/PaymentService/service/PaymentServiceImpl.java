@@ -35,14 +35,10 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("Getting Payment Response using Order Id : {}", orderId);
         TransactionDetails transactionDetails = transactionDetailsRepository.findByOrderId(Long.valueOf(orderId));
 
-        PaymentResponse paymentResponse = PaymentResponse.builder()
-                .paymentId(transactionDetails.getId())
-                .paymentStatus(transactionDetails.getPaymentStatus())
-                .paymentDate(transactionDetails.getPaymentDate())
-                .amount(transactionDetails.getAmount())
-                .orderId(transactionDetails.getOrderId())
-                .paymentMode(PaymentMode.valueOf(transactionDetails.getPaymentMode()))
-                .build();
+        PaymentResponse paymentResponse = PaymentResponse.builder().paymentId(transactionDetails.getId())
+                .paymentStatus(transactionDetails.getPaymentStatus()).paymentDate(transactionDetails.getPaymentDate())
+                .amount(transactionDetails.getAmount()).orderId(transactionDetails.getOrderId())
+                .paymentMode(PaymentMode.valueOf(transactionDetails.getPaymentMode())).build();
 
         log.info("Retrieved Payment Response :: {}", paymentResponse);
         return paymentResponse;
