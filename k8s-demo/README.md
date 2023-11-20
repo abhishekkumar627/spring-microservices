@@ -101,3 +101,21 @@ except by being restarted. Kubernetes provides Liveness probe to detect and reme
 These can be defineds using, http, tcp, commands as well as gRPc requests.
 
 3. startup probe is used in legacy appn.
+
+
+##### For Service-registry : 
+
+Going to create stateful set, it will be storing/having state of each of the applcation which connects to it.
+
+Mysql : 
+
+Going to store state of everything thus it is also stateful set.
+
+##### Deployments will be of 
+1. cloudGateway
+2. configserver
+3. orderservice
+4. paymentservice
+5. productionservice.
+
+

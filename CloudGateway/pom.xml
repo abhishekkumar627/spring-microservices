@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.abhishek</groupId>
-	<artifactId>CloudGateway</artifactId>
+	<artifactId>cloudgateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CloudGateway</name>
 	<description>Cloud Gatway webservice</description>
@@ -108,6 +108,19 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<configuration>
+					<from>
+						<image>openjdk:11</image>
+					</from>
+					<to>
+						<image>registry.hub.docker.com/abhishekkumar627/${artifactId}</image>
+						<tags>${project.version}</tags>
+					</to>
 				</configuration>
 			</plugin>
 		</plugins>
