@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service-app
+spec:
+  selector:
+    matchLabels:
+      app: product-service-app
+  template:
+    metadata:
+      labels:
+        app: product-service-app
+    spec:
+      containers:
+      - name: product-service-app
+        image: abhishekkumar627/productservice
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8081
+        env:
+         - name: EUREKA_SERVER_ADDRESS
+           valueFrom:
+            configMapKeyRef:
+              key: eureka_service_address
+              value: eureka-cm
+         - name: CLOUD_GATEWAY_URL
+           valueFrom:
+            configMapKeyRef:
+              key: config_url
+              value: config-cm
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service-svc
+spec:
+  selector:
+    app: product-service-app
+  ports:
+  - port: 80
+    targetPort: 8081
+
