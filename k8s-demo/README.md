@@ -116,6 +116,6 @@ Going to store state of everything thus it is also stateful set.
 2. configserver
 3. orderservice
 4. paymentservice
-5. productionservice.
-
+5. productservice
+6. serviceregistry
 
